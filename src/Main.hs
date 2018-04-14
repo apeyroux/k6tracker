@@ -1,4 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
+
+--
+-- todo: https://hackage.haskell.org/package/hailgun
+--
+
 module Main where
 
 import           Control.Concurrent
