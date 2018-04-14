@@ -14,8 +14,9 @@ data K6Status = K6Status {
   } deriving Show
 
 type Hardware = String
+type WSURL = String
 
-ovhws :: Hardware -> String
+ovhws :: Hardware -> WSURL
 ovhws hardware = "https://www.ovh.com/engine/api/dedicated/server/availabilities?country=fr&&hardware=" ++ hardware
 
 hardstatus :: Hardware -> IO [K6Status]
@@ -26,7 +27,7 @@ hardstatus h = do
     . key "datacenters"
     . values
     . to (\e -> K6Status (e ^. key "availability" . _String) (e ^. key "datacenter" . _String))
-    . filtered (\k6 -> k6Av k6 == "available")
+    . filtered (\k6 -> k6Av k6 /= "unavailable")
 
 main :: IO ()
 main = putStrLn ("checking " ++ ovhws h ++ "...")
