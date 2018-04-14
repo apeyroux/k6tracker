@@ -4,14 +4,18 @@ let
 
   inherit (nixpkgs) pkgs;
 
-  f = { mkDerivation, aeson, base, stdenv, wreq }:
+  f = { mkDerivation, aeson, base, lens, lens-aeson, stdenv, text
+      , wreq
+      }:
       mkDerivation {
         pname = "k6tracker";
         version = "0.1.0.0";
         src = ./.;
         isLibrary = false;
         isExecutable = true;
-        executableHaskellDepends = [ aeson base wreq ];
+        executableHaskellDepends = [
+          aeson base lens lens-aeson text wreq
+        ];
         license = stdenv.lib.licenses.bsd3;
       };
 
