@@ -32,7 +32,7 @@ hardstatus h = do
     . key "datacenters"
     . values
     . to (\e -> K6Status (e ^. key "availability" . _String) (e ^. key "datacenter" . _String))
-    . filtered (\k6 -> k6Av k6 /= "unavailable")
+    . filtered (("unavailable" /=) . k6Av)
 
 main :: IO ()
 main = putStrLn ("checking " ++ ovhws h ++ "...")
