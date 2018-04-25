@@ -11,7 +11,10 @@ import           Control.Exception as E
 import           Control.Lens
 import           Data.Aeson
 import           Data.Aeson.Lens
+import           Data.Monoid
 import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
+import           Network.Mail.Mime
 import           Network.Wreq
 
 data K6Status = K6Status {
@@ -21,6 +24,10 @@ data K6Status = K6Status {
 
 type Hardware = String
 type WSURL = String
+
+sendStatusMail :: T.Text -> T.Text -> T.Text -> T.Text -> IO ()
+sendStatusMail from to subject msg = do
+  TIO.putStrLn msg
 
 ovhws :: Hardware -> WSURL
 ovhws hardware = "https://www.ovh.com/engine/api/dedicated/server/availabilities?country=fr&&hardware=" ++ hardware
@@ -40,7 +47,11 @@ hardstatus h = do
 main :: IO ()
 main = putStrLn ("checking " ++ ovhws h ++ "...")
        >> hardstatus h
-       >>= mapM_ (\ds -> putStrLn $ (T.unpack (k6Av ds)) ++ " at " ++ (T.unpack (k6Ds ds)))
+       >>= mapM_ (\ds -> do
+                     sendStatusMail "test@lambda.email" "test@lambda.email"
+                       ((k6Av ds) <> " at " <> (k6Ds ds))
+                       ((k6Av ds) <> " at " <> (k6Ds ds))
+                 )
        >> threadDelay delay
        >> main
   where

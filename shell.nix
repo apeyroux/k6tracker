@@ -4,8 +4,8 @@ let
 
   inherit (nixpkgs) pkgs;
 
-  f = { mkDerivation, aeson, base, lens, lens-aeson, stdenv, text
-      , wreq
+  f = { mkDerivation, aeson, base, lens, lens-aeson, mime-mail
+      , smtps-gmail, stdenv, text, wreq
       }:
       mkDerivation {
         pname = "k6tracker";
@@ -14,7 +14,7 @@ let
         isLibrary = false;
         isExecutable = true;
         executableHaskellDepends = [
-          aeson base lens lens-aeson text wreq
+          aeson base lens lens-aeson mime-mail smtps-gmail text wreq
         ];
         license = stdenv.lib.licenses.bsd3;
       };
