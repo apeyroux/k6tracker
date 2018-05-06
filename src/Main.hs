@@ -7,7 +7,7 @@
 module Main where
 
 import           Control.Concurrent
-import           Control.Exception as E
+import           Control.Exception.Safe
 import           Control.Lens
 import           Data.Aeson
 import           Data.Aeson.Lens
@@ -34,13 +34,16 @@ ovhws hardware = "https://www.ovh.com/engine/api/dedicated/server/availabilities
 
 hardstatus :: Hardware -> IO [K6Status]
 hardstatus h = do
-  r <- getWith opts (ovhws h)
-  return $ r ^.. responseBody
-    . values
-    . key "datacenters"
-    . values
-    . to (\e -> K6Status (e ^. key "availability" . _String) (e ^. key "datacenter" . _String))
-    . filtered (("unavailable" /=) . k6Av)
+  tryr <- tryAny (getWith opts (ovhws h))
+  case tryr of
+    Right r -> do
+      return $ r ^.. responseBody
+        . values
+        . key "datacenters"
+        . values
+        . to (\e -> K6Status (e ^. key "availability" . _String) (e ^. key "datacenter" . _String))
+        . filtered (("unavailable" /=) . k6Av)
+    Left _ -> return []
   where
     opts = set checkResponse (Just $ \_ _ -> return ()) defaults
 
