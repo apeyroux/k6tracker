@@ -31,7 +31,7 @@ sendStatusMail from to subject msg = do
   TIO.putStrLn msg
 
 ovhws :: Hardware -> WSURL
-ovhws hardware = "https://www.ovh.com/engine/api/dedicated/server/availabilities?country=fr&&hardware=" ++ hardware
+ovhws hardware = "https://www.ovh.com/engine/api/dedicated/server/availabilities?country=fr&hardware=" ++ hardware
 
 hardstatus :: Hardware -> IO [K6Status]
 hardstatus h = do
