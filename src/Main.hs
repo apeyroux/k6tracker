@@ -43,7 +43,7 @@ hardstatus h = do
         . values
         . to (\e -> K6Status (e ^. key "availability" . _String) (e ^. key "datacenter" . _String))
         . filtered (("unavailable" /=) . k6Av)
-    Left _ -> return []
+    Left e -> print e >> return []
   where
     opts = set checkResponse (Just $ \_ _ -> return ()) defaults
 
