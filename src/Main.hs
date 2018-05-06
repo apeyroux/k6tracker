@@ -16,6 +16,7 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import           Network.Mail.Mime
 import           Network.Wreq
+import           System.IO
 
 data K6Status = K6Status {
   k6Av :: T.Text
@@ -43,7 +44,9 @@ hardstatus h = do
         . values
         . to (\e -> K6Status (e ^. key "availability" . _String) (e ^. key "datacenter" . _String))
         . filtered (("unavailable" /=) . k6Av)
-    Left e -> print e >> return []
+    Left e -> print e
+      >> writeFile "/tmp/k6tracker.err" (show e)
+      >> return []
   where
     opts = set checkResponse (Just $ \_ _ -> return ()) defaults
 
