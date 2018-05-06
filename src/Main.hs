@@ -26,8 +26,12 @@ data K6Status = K6Status {
 type Hardware = String
 type WSURL = String
 
+writeLog :: String -> IO ()
+writeLog = writeFile "/tmp/k6tracker.log"
+
 sendStatusMail :: T.Text -> T.Text -> T.Text -> T.Text -> IO ()
 sendStatusMail from to subject msg = do
+  writeLog msg
   TIO.putStrLn msg
 
 ovhws :: Hardware -> WSURL
@@ -45,7 +49,7 @@ hardstatus h = do
         . to (\e -> K6Status (e ^. key "availability" . _String) (e ^. key "datacenter" . _String))
         . filtered (("unavailable" /=) . k6Av)
     Left e -> print e
-      >> writeFile "/tmp/k6tracker.err" (show e)
+      >> writeLog (show e)
       >> return []
   where
     opts = set checkResponse (Just $ \_ _ -> return ()) defaults
